@@ -6,6 +6,12 @@
     <div class="max-w-2xl mx-auto">
         <h1 class="text-3xl font-bold mt-8">Últimas movimentações</h1>
 
+        <div class="flex justify-start mt-4">
+            <button class="btn btn-primary btn-sm" onclick="document.getElementById('grafico-modal').showModal()">
+                Ver gastos por categoria 📊
+            </button>
+        </div>
+
         <div class="grid grid-cols-3 gap-4 mt-4">
 
             <div class="card bg-base-100 shadow">
@@ -99,4 +105,93 @@
             @endforelse
         </div>
     </div>
+
+
+
+
+
+    <!-- Modal do Gráfico -->
+    <dialog id="grafico-modal" class="modal">
+        <div class="modal-box max-w-3xl bg-base-100 shadow-xl rounded-lg">
+
+            <h3 class="font-bold text-xl mb-4 text-center">Gastos por Categoria</h3>
+
+            <!-- Filtros -->
+            <div class="flex justify-center gap-2 mb-4">
+                @foreach (['7' => '7 dias', '15' => '15 dias', '30' => '30 dias', '365' => '1 ano', '0' => 'Total'] as $dias => $label)
+                    <button class="btn btn-sm filtro-btn" data-dias="{{ $dias }}">{{ $label }}</button>
+                @endforeach
+            </div>
+
+            <!-- Container do gráfico -->
+            <div class="w-full h-[320px] flex items-center justify-center">
+                <canvas id="graficoCategorias" class="max-h-[300px]"></canvas>
+            </div>
+
+            <div class="modal-action">
+                <button class="btn" onclick="document.getElementById('grafico-modal').close()">Fechar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const ctx = document.getElementById('graficoCategorias').getContext('2d');
+            let grafico = null;
+
+            // Função para carregar o gráfico com dados já enviados do controlador
+            function carregarGrafico(dias) {
+                fetch("{{ url('/graficos/gastos') }}?dias=" + dias)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (grafico) grafico.destroy();
+
+                        grafico = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: data.labels,
+                                datasets: [{
+                                    label: 'Gastos (R$)',
+                                    data: data.valores,
+                                    borderWidth: 1,
+                                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: { color: "#666" }
+                                    },
+                                    x: {
+                                        ticks: { color: "#666" }
+                                    }
+                                },
+                                plugins: {
+                                    legend: { display: false }
+                                }
+                            }
+                        });
+                    });
+            }
+
+            // Botões do filtro
+            document.querySelectorAll('.filtro-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const dias = e.target.dataset.dias;
+                    carregarGrafico(dias);
+                });
+            });
+
+            // Carrega padrão (30 dias)
+            carregarGrafico(30);
+        });
+    </script>
+
+
 </x-layout>

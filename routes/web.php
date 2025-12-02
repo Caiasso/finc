@@ -81,3 +81,34 @@ Route::get('/addCategoria', function () {
     return view('addCategoria');
 });
 Route::post('/addCategoria', [CategoriaController::class, 'store']);
+
+
+
+Route::get('/graficos/gastos', function () {
+    $dias = request('dias');
+
+    $query = Movimentacao::where('user_id', auth()->id())
+        ->where('tipo_movimentacao', 2); // somente GASTOS
+
+    if ($dias > 0) {
+        $query->where('created_at', '>=', now()->subDays($dias));
+    }
+
+    $gastos = $query->selectRaw('categoria_id, SUM(valor_movimentacao) as total')
+        ->groupBy('categoria_id')
+        ->get();
+
+    $labels = [];
+    $valores = [];
+
+    foreach ($gastos as $g) {
+        $categoria = Categoria::find($g->categoria_id);
+        $labels[] = $categoria->nome;
+        $valores[] = $g->total;
+    }
+
+    return response()->json([
+        'labels' => $labels,
+        'valores' => $valores
+    ]);
+});

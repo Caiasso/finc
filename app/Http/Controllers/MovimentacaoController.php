@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categoria;
 use App\Models\Movimentacao;
 use Illuminate\Http\Request;
 
@@ -53,7 +54,13 @@ class MovimentacaoController extends Controller
      */
     public function edit(Movimentacao $movimentacao)
     {
-        //
+        if ($movimentacao->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $categorias = Categoria::where('user_id', auth()->id())->get();
+
+        return view('edit', compact('movimentacao', 'categorias'));
     }
 
     /**
@@ -61,7 +68,17 @@ class MovimentacaoController extends Controller
      */
     public function update(Request $request, Movimentacao $movimentacao)
     {
-        //
+        if ($movimentacao->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $movimentacao->update($request->validate([
+            'valor_movimentacao' => 'required|numeric',
+            'descricao' => 'nullable|string|max:255',
+            'categoria_id' => 'required|exists:categorias,id',
+        ]));
+
+        return redirect('/')->with('success', 'Movimentação atualizada!');
     }
 
     /**
@@ -69,6 +86,14 @@ class MovimentacaoController extends Controller
      */
     public function destroy(Movimentacao $movimentacao)
     {
-        //
+        // Segurança: impedir deletar movimentação de outro usuário
+        if ($movimentacao->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $movimentacao->delete();
+
+        return redirect('/')
+            ->with('success', 'Movimentação deletada com sucesso!');
     }
 }
