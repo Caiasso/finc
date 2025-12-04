@@ -5,7 +5,6 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
-RUN touch /var/www/database/database.sqlite
 
 # Stage 2 - Backend (Laravel + PHP + Composer)
 FROM php:8.2-fpm AS backend
@@ -34,4 +33,10 @@ RUN php artisan config:clear && \
     php artisan route:clear && \
     php artisan view:clear
 
+# copiar entrypoint e torná-lo executável
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# usar entrypoint e iniciar php-fpm
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
