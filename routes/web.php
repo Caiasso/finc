@@ -8,38 +8,82 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\MovimentacaoController;
 
 Route::get('/', function () {
-    // Se não houver usuário logado, redireciona para login
     if (!auth()->check()) {
         return view('login');
     }
 
     $user = auth()->user();
 
+    // Datas do mês atual
+    $inicioMes = now()->startOfMonth();
+    $fimMes = now()->endOfMonth();
+
+    // Categorias do usuário
     $categorias = Categoria::where('user_id', $user->id)->get();
 
+    // Movimentações apenas do mês atual
     $movimentacoes = Movimentacao::where('user_id', $user->id)
-        ->where('created_at', '>=', now()->subDays(30))
+        ->whereBetween('created_at', [$inicioMes, $fimMes])
         ->orderBy('created_at', 'desc')
         ->get();
 
-    $entradas30 = $user->movimentacao()
+    // Entradas do mês atual
+    $entradasMes = $user->movimentacao()
         ->where('tipo_movimentacao', 1)
-        ->where('created_at', '>=', now()->subDays(30))
+        ->whereBetween('created_at', [$inicioMes, $fimMes])
         ->sum('valor_movimentacao');
 
-    $saidas30 = $user->movimentacao()
+    // Saídas do mês atual
+    $saidasMes = $user->movimentacao()
         ->where('tipo_movimentacao', 2)
-        ->where('created_at', '>=', now()->subDays(30))
+        ->whereBetween('created_at', [$inicioMes, $fimMes])
         ->sum('valor_movimentacao');
 
-    $saldo30 = $entradas30 - $saidas30;
+    // Saldo do mês atual
+    $saldoMes = $entradasMes - $saidasMes;
+
+    //total de movimentacoes
+    $totalEntradas = Movimentacao::where('user_id', auth()->id())
+        ->where('tipo_movimentacao', 1)
+        ->sum('valor_movimentacao');
+
+    $totalSaidas = Movimentacao::where('user_id', auth()->id())
+        ->where('tipo_movimentacao', 2)
+        ->sum('valor_movimentacao');
+
+    $saldoTotal = $totalEntradas - $totalSaidas;
+
+
+    // Saldo total do usuário (todas as movimentações)
+    $entradasTotal = $user->movimentacao()
+        ->where('tipo_movimentacao', 1)
+        ->sum('valor_movimentacao');
+
+    $saidasTotal = $user->movimentacao()
+        ->where('tipo_movimentacao', 2)
+        ->sum('valor_movimentacao');
+
+    $saldoTotal = $entradasTotal - $saidasTotal;
+
+
+    $movimentacoesMesTicker = \App\Models\Movimentacao::where('user_id', auth()->id())
+        ->whereMonth('created_at', now()->month)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+
+
 
     return view('home', compact(
         'categorias',
         'movimentacoes',
-        'entradas30',
-        'saidas30',
-        'saldo30'
+        'entradasMes',
+        'saidasMes',
+        'saldoMes',
+        'saldoTotal',
+        'totalEntradas',
+        'totalSaidas',
+        'movimentacoesMesTicker'
     ));
 });
 

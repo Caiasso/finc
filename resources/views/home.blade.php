@@ -4,37 +4,50 @@
     </x-slot:title>
 
     <div class="max-w-2xl mx-auto">
+
         <h1 class="text-3xl font-bold mt-8">Últimas movimentações</h1>
 
-        <div class="flex justify-start mt-4">
+        <div class="flex gap-4 mt-4 flex-row items-start">
+
+            <!-- Botão que abre o modal -->
             <button class="btn btn-primary btn-sm" onclick="document.getElementById('grafico-modal').showModal()">
-                Ver gastos por categoria 📊
+                Ver gráfico por categoria 📊
             </button>
+
+            <!-- Retângulo: Saldo total -->
+            <div
+                class="card bg-base-100 shadow cursor-default pointer-events-none w-fit p-3 flex items-center flex-row gap-2 h-8">
+                <p class="text-sm text-base-content/60">Saldo total:</p>
+                <span class="@if ($saldoTotal >= 0) text-success @else text-error @endif font-bold ml-1">
+                    R$ {{ number_format($saldoTotal, 2, ',', '.') }}
+                </span>
+            </div>
+
         </div>
 
         <div class="grid grid-cols-3 gap-4 mt-4">
 
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4">
-                    <p class="text-sm text-base-content/60">Entrou nos últimos 30 dias</p>
-                    <p class="text-2xl font-bold text-success">R$ {{ number_format($entradas30, 2, ',', '.') }}</p>
+                    <p class="text-sm text-base-content/60">Entrou nesse mês</p>
+                    <p class="text-2xl font-bold text-success">R$ {{ number_format($entradasMes, 2, ',', '.') }}</p>
                 </div>
             </div>
 
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4">
-                    <p class="text-sm text-base-content/60">Gasto nos últimos 30 dias</p>
-                    <p class="text-2xl font-bold text-error">R$ {{ number_format($saidas30, 2, ',', '.') }}</p>
+                    <p class="text-sm text-base-content/60">Saiu nesse mês</p>
+                    <p class="text-2xl font-bold text-error">R$ {{ number_format($saidasMes, 2, ',', '.') }}</p>
                 </div>
             </div>
 
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4">
-                    <p class="text-sm text-base-content/60">Saldo dos últimos 30 dias</p>
+                    <p class="text-sm text-base-content/60">Saldo do mês</p>
 
                     <p class="text-2xl font-bold 
-                @if ($saldo30 >= 0) text-success @else text-error @endif">
-                        R$ {{ number_format($saldo30, 2, ',', '.') }}
+                @if ($saldoMes >= 0) text-success @else text-error @endif">
+                        R$ {{ number_format($saldoMes, 2, ',', '.') }}
                     </p>
                 </div>
             </div>
@@ -43,45 +56,84 @@
 
 
 
-        <!-- Chirp Form -->
+        <!-- Form -->
         <div class="card bg-base-100 shadow mt-8">
             <div class="card-body">
                 <form method="POST" action="/movimentacoes">
                     @csrf
-                    <div class="form-control w-full pb-2">
-                        <input type="number" name="valor_movimentacao"
+                    <div class="form-control w-full pb-2 mb-2">
+
+                        <label for="valor_movimentacao" class="px-3 py-1 -mb-[1px] w-fit rounded-t-xl 
+               bg-base-100 
+               border border-base-content/20 border-b-0
+               text-sm text-base-content/70">
+                            Valor
+                        </label>
+
+                        <input type="number" name="valor_movimentacao" id="valor_movimentacao"
                             placeholder="Informe o valor da movimentação aqui ^^"
-                            class="input input-bordered w-full resize-none" required></input>
+                            class="input input-bordered w-full rounded-t-none" required min="0" step="0.01" />
+
                     </div>
-                    <div class="form-control w-full pb-2">
-                        <input type="string" name="descricao"
+
+
+                    <div class="form-control w-full pb-2 mb-2">
+
+                        <label for="descricao" class="px-3 py-1 -mb-[1px] w-fit rounded-t-xl
+               bg-base-100 
+               border border-base-content/20 border-b-0
+               text-sm text-base-content/70">
+                            Descrição
+                        </label>
+
+                        <input type="text" name="descricao" id="descricao"
                             placeholder="Uma descrição pra deixar as coisas organizadas"
-                            class="input input-bordered w-full resize-none"></input>
-                    </div>
-                    <div class="form-control w-full">
-                        <select name="categoria_id" class="select select-bordered w-full bg-base-100 text-base-content"
-                            required>
-
-                            <option value="" disabled selected>Selecione a categoria</option>
-
-                            @foreach ($categorias as $categoria)
-                                <option value="{{ $categoria->id }}">{{$categoria->nome}}</option>
-                            @endforeach
-                        </select>
+                            class="input input-bordered w-full rounded-t-none" />
                     </div>
 
+                    <div class="flex flex-row gap-2 w-full items-end pb-4">
 
-                    <div class="mt-4 flex items-center justify-between gap-2">
-                        <a href="/addCategoria" class="btn btn-primary btn-sm">+ Adicionar categoria</a>
+                        <!-- Input + label do select -->
+                        <div class="flex-1">
+                            <label for="categoria_id" class="px-3 py-1 -mb-[1px] w-fit rounded-t-xl 
+            bg-base-100 
+            border border-base-content/20 border-b-0
+            text-sm text-base-content/70">
+                                Categoria
+                            </label>
 
-                        <div class="flex items-center gap-4">
-                            <button type="submit" name="tipo_movimentacao" value="2" class="btn btn-error btn-sm">
-                                Saída
-                            </button>
+                            <select name="categoria_id" id="categoria_id"
+                                class="select select-bordered w-full bg-base-100 text-base-content rounded-t-none h-[42px]"
+                                required>
 
-                            <button type="submit" name="tipo_movimentacao" value="1" class="btn btn-success btn-sm">
-                                Entrada
-                            </button>
+                                <option value="" disabled selected>Selecione a categoria</option>
+                                @foreach ($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Botão de adicionar categoria alinhado -->
+                        <button onclick="document.getElementById('modalAddCategoria').showModal()" type="button"
+                            class="btn btn-primary h-[42px] min-h-[42px] px-4">
+                            + Adicionar categoria
+                        </button>
+
+                    </div>
+
+
+                    <div class="flex flex-col items-start gap-4">
+                        <div class="mt-2 flex items-center justify-between gap-2 flex-1 w-full">
+
+                            <div class="flex items-center gap-4">
+                                <button type="submit" name="tipo_movimentacao" value="2" class="btn btn-ghost btn-sm">
+                                    Saída
+                                </button>
+
+                                <button type="submit" name="tipo_movimentacao" value="1" class="btn btn-ghost btn-sm">
+                                    Entrada
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -192,6 +244,37 @@
             carregarGrafico(30);
         });
     </script>
+
+
+
+    <!-- Modal Adicionar Categoria -->
+    <dialog id="modalAddCategoria" class="modal">
+        <div class="modal-box bg-base-100 shadow-xl rounded-lg max-w-md">
+
+            <h3 class="font-bold text-xl mb-4 text-center">Adicionar categoria</h3>
+
+            <form method="POST" action="/addCategoria">
+                @csrf
+
+                <div class="form-control w-full">
+                    <input type="text" name="nome" class="input input-bordered w-full" placeholder="Nome da categoria"
+                        required>
+                </div>
+
+                <div class="modal-action flex justify-between w-full">
+                    <button type="button" class="btn btn-ghost btn-sm"
+                        onclick="document.getElementById('modalAddCategoria').close()">
+                        Voltar
+                    </button>
+
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
 
 
 </x-layout>

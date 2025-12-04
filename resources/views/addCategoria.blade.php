@@ -17,7 +17,7 @@
 
                     <div class="card-actions justify-between mt-4">
                         <a href="/" class="btn btn-ghost btn-sm">
-                            Cancelar
+                            Voltar
                         </a>
                         <button type="submit" class="btn btn-primary btn-sm">
                             Salvar
