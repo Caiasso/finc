@@ -95,7 +95,7 @@
 
         <!-- CENTRO — Ticker -->
         @auth
-            @if ($movimentacoesMesTicker->count() >= 5)
+            @if ($movimentacoesMesTicker->count() >= 2)
                 <div class="navbar-center w-full max-w-2xl gap-4">
                     <div class="ticker-container">
                         <div class="ticker-track">

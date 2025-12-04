@@ -5,7 +5,13 @@
 
     <div class="max-w-2xl mx-auto">
 
-        <h1 class="text-3xl font-bold mt-8">Últimas movimentações</h1>
+        @php
+            $firstName = auth()->check() ? explode(' ', trim(auth()->user()->name))[0] : 'Usuário';
+            $hour = now()->hour;
+            $greeting = $hour < 12 ? 'Bom dia' : ($hour < 18 ? 'Boa tarde' : 'Boa noite');
+        @endphp
+
+        <h1 class="text-3xl font-bold mt-8">{{ $greeting }}, {{ $firstName }}!</h1>
 
         <div class="flex gap-4 mt-4 flex-row items-start">
 
