@@ -22,23 +22,19 @@
             mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
             -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
             padding-inline: 1.25rem;
-            /* aumenta espaço visível nas laterais */
             box-sizing: border-box;
         }
 
-        /* Track: duas cópias lado a lado no HTML (já presente). --shift será definido dinamicamente em px */
         .ticker-track {
             display: flex;
             align-items: center;
             gap: 0;
-            /* gaps entre itens controlados no .ticker-block */
             will-change: transform;
             --shift: 0px;
             --duration: 12s;
             animation: tickerLoop var(--duration) linear infinite;
         }
 
-        /* Cada bloco agrupa os itens; largura é automática (medida pelo JS) */
         .ticker-block {
             display: flex;
             gap: 3rem;
@@ -46,7 +42,6 @@
             flex: 0 0 auto;
             align-items: center;
             padding-right: 3rem;
-            /* espaço extra no final do bloco para criar gap entre cópias */
             box-sizing: border-box;
         }
 
@@ -57,12 +52,10 @@
 
             to {
                 transform: translateX(calc(var(--shift) * -1));
-                /* usa px exato para evitar pulo */
             }
         }
     </style>
 
-    <!-- Estilos da animação de tema -->
     <style>
         .tema-icon {
             transition: transform 0.4s ease, opacity 0.3s ease;
@@ -100,7 +93,6 @@
                     <div class="ticker-container">
                         <div class="ticker-track">
                             <div class="ticker-block" aria-hidden="false">
-                                {{-- BLOCO 1 --}}
                                 @foreach ($movimentacoesMesTicker as $movimentacao)
                                     <div class="flex items-center gap-2 text-sm">
                                         <span class="text-base-content/70">
@@ -121,7 +113,6 @@
                             </div>
 
                             <div class="ticker-block" aria-hidden="true">
-                                {{-- BLOCO 2 (duplicado para loop perfeito) --}}
                                 @foreach ($movimentacoesMesTicker as $movimentacao)
                                     <div class="flex items-center gap-2 text-sm">
                                         <span class="text-base-content/70">

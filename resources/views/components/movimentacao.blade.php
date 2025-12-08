@@ -33,7 +33,7 @@
                 <div class="flex justify-between w-full mb-2">
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-base-content/60">
-                            {{ $movimentacao->created_at->diffForHumans() }}
+                            {{ $movimentacao->created_at->format('d/m/Y') }}
                         </span>
                         <span>·</span>
                         <p class="truncate">{{ $movimentacao->descricao }}</p>
@@ -62,14 +62,9 @@
 
                     <div
                         class="card bg-base-200 shadow cursor-default pointer-events-none w-fit p-3 flex items-center flex-row gap-2 h-8">
-                        <p class="text-sm text-base-content/60">Valor:</p>
-                        <p>R$ {{ number_format($movimentacao->valor_movimentacao, 2, ',', '.') }}</p>
-                    </div>
-
-                    <div
-                        class="card bg-base-200 shadow cursor-default pointer-events-none w-fit p-3 flex items-center flex-row gap-2 h-8">
-                        <p class="text-sm text-base-content/60">Categoria:</p>
                         <p>{{ $movimentacao->categoria->nome }}</p>
+                        <span>·</span>
+                        <p>R$ {{ number_format($movimentacao->valor_movimentacao, 2, ',', '.') }}</p>
                     </div>
 
                     @php

@@ -12,7 +12,7 @@
                     <form method="POST" action="/register">
                         @csrf
 
-                        <!-- Name -->
+                        <!-- Nome -->
                         <label class="floating-label mb-6">
                             <input type="text" name="name" placeholder="Marquinhos da Silva" value="{{ old('name') }}"
                                 class="input input-bordered @error('name') input-error @enderror" required>
@@ -37,7 +37,7 @@
                             </div>
                         @enderror
 
-                        <!-- Password -->
+                        <!-- Senha -->
                         <label class="floating-label mb-6">
                             <input type="password" name="password" placeholder="••••••••"
                                 class="input input-bordered @error('password') input-error @enderror" required>
@@ -49,14 +49,14 @@
                             </div>
                         @enderror
 
-                        <!-- Password Confirmation -->
+                        <!-- Confirmação de senha -->
                         <label class="floating-label mb-6">
                             <input type="password" name="password_confirmation" placeholder="••••••••"
                                 class="input input-bordered" required>
                             <span>Confirme sua senha</span>
                         </label>
 
-                        <!-- Submit Button -->
+                        <!-- Submit -->
                         <div class="form-control mt-8">
                             <button type="submit" class="btn btn-primary btn-sm w-full">
                                 Criar conta e entrar!

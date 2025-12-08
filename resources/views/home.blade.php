@@ -7,7 +7,7 @@
 
         @php
             $firstName = auth()->check() ? explode(' ', trim(auth()->user()->name))[0] : 'Usuário';
-            $hour = now()->hour;
+            $hour = now()->setTimezone(config('app.timezone'))->hour;
             $greeting = $hour < 12 ? 'Bom dia' : ($hour < 18 ? 'Boa tarde' : 'Boa noite');
         @endphp
 
@@ -131,7 +131,7 @@
                     <div class="flex flex-col items-start gap-4">
                         <div class="mt-2 flex items-center justify-between gap-2 flex-1 w-full">
 
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-10">
                                 <button type="submit" name="tipo_movimentacao" value="2" class="btn btn-ghost btn-sm">
                                     Saída
                                 </button>
